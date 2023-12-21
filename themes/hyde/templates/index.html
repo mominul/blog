@@ -8,7 +8,24 @@
       <!-- viewport-fit=cover is to support iPhone X rounded corners and notch in landscape-->
       <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover">
 
-      <title>{% block title %}{{ config.title }}{% endblock title %}</title>
+      <!-- title>{% block title %}{{ config.title }}{% endblock title %}</title !-->
+
+      {% block meta_content %}
+        {% if page.title %}
+        <title>{{page.title}} —&nbsp;Mominul</title>
+        <meta name="twitter:title" content="{{page.title}} —&nbsp;Mominul">
+        <meta property="og:title" content="{{page.title}} —&nbsp;Mominul" />
+        {% else %}
+        <title>Mominul's Blog</title>
+        <meta name="twitter:title" content="Mominul's Blog">
+        <meta property="og:title" content="Mominul's Blog" />
+        {% endif %}
+        {% if page.description %}
+        <meta name="description" content="{{ page.description | safe }}" />
+        <meta name="twitter:description" content="{{ page.description | safe }}">
+        <meta property="og:description" content="{{ page.description | safe }}" />
+        {% endif %}
+      {% endblock meta_content %}
 
       <!-- CSS -->
       <link rel="stylesheet" href="{{ get_url(path="print.css", trailing_slash=false) }}" media="print">
