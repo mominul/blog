@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+      <!-- Enable responsiveness on mobile devices-->
+      <!-- viewport-fit=cover is to support iPhone X rounded corners and notch in landscape-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover">
+
+      <!-- title>Mominul&#x27;s Blog</title !-->
+
+      
+        
+        <title>Setting up Github Actions for repositories targeting various version of Rust —&nbsp;Mominul</title>
+        <meta name="twitter:title" content="Setting up Github Actions for repositories targeting various version of Rust —&nbsp;Mominul">
+        <meta property="og:title" content="Setting up Github Actions for repositories targeting various version of Rust —&nbsp;Mominul" />
+        
+        
+        <meta name="description" content="Setup GitHub Actions CI targeting various versions of Rust compiler" />
+        <meta name="twitter:description" content="Setup GitHub Actions CI targeting various versions of Rust compiler">
+        <meta property="og:description" content="Setup GitHub Actions CI targeting various versions of Rust compiler" />
+        
+        
+        <meta name="keywords" content="msrv, rust, cargo, github actions, ci" />
+        
+      
+
+      <!-- CSS -->
+      <link rel="stylesheet" href="https://mominul.github.io/blog/print.css" media="print">
+      <link rel="stylesheet" href="https://mominul.github.io/blog/poole.css">
+      <link rel="stylesheet" href="https://mominul.github.io/blog/hyde.css">
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+      
+
+      
+      
+    </head>
+
+    <body class=" ">
+        
+            <div class="sidebar">
+                <div class="container sidebar-sticky">
+                    <div class="sidebar-about">
+                        
+                            <a href="https:&#x2F;&#x2F;mominul.github.io&#x2F;blog&#x2F;"><h1>Mominul&#x27;s Blog</h1></a>
+                            
+                            <p class="lead">Random thoughts about random things!</p>
+                            
+                        
+                    </div>
+
+                    <ul class="sidebar-nav">
+                        
+                        
+                        <li class="sidebar-nav-item"><a href="http:&#x2F;&#x2F;mominul.github.io&#x2F;">Home</a></li>
+                        
+                        <li class="sidebar-nav-item"><a href="http:&#x2F;&#x2F;mominul.github.io&#x2F;blog&#x2F;">Blog</a></li>
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div class="content container">
+            
+<div class="post">
+  <h1 class="post-title">Setting up Github Actions for repositories targeting various version of Rust</h1>
+  <span class="post-date">2023-12-22</span>
+  <p>It is crucial to check if your project is building and executing tests with every commit, which can be easily achievable by using the Github Actions CI (Continuous integration) service that is freely available with every Github repository.</p>
+<p>GitHub Actions need a configuration file like <code>main.yml</code> to be placed in the <code>.github/workflows</code> directory of your repository. That file would contain the necessary steps to prepare your environment (installing and setting up compiler/interpreter) and run your tests.</p>
+<p>If your Rust project uses <code>cargo</code> to build and run tests and you want to target the <code>stable</code> version of Rust, you can use this <code>main.yml</code>:</p>
+<pre data-lang="yml" style="background-color:#2b303b;color:#c0c5ce;" class="language-yml "><code class="language-yml" data-lang="yml"><span style="color:#d08770;">on</span><span>: [</span><span style="color:#a3be8c;">push</span><span>, </span><span style="color:#a3be8c;">pull_request</span><span>]
+</span><span>
+</span><span style="color:#bf616a;">name</span><span>: </span><span style="color:#a3be8c;">Continuous integration
+</span><span>
+</span><span style="color:#bf616a;">jobs</span><span>:
+</span><span>  </span><span style="color:#bf616a;">test</span><span>:
+</span><span>    </span><span style="color:#bf616a;">name</span><span>: </span><span style="color:#a3be8c;">Test Suite
+</span><span>    </span><span style="color:#bf616a;">runs-on</span><span>: </span><span style="color:#a3be8c;">ubuntu-latest
+</span><span>    </span><span style="color:#bf616a;">steps</span><span>:
+</span><span>      - </span><span style="color:#bf616a;">uses</span><span>: </span><span style="color:#a3be8c;">actions/checkout@v4
+</span><span>      - </span><span style="color:#bf616a;">uses</span><span>: </span><span style="color:#a3be8c;">dtolnay/rust-toolchain@stable
+</span><span>      - </span><span style="color:#bf616a;">run</span><span>: </span><span style="color:#a3be8c;">cargo test
+</span></code></pre>
+<p>If you want to target against various versions of Rust and target multiple platforms, the <code>main.yml</code> file would look like this:</p>
+<pre data-lang="yml" style="background-color:#2b303b;color:#c0c5ce;" class="language-yml "><code class="language-yml" data-lang="yml"><span style="color:#d08770;">on</span><span>: [</span><span style="color:#a3be8c;">push</span><span>, </span><span style="color:#a3be8c;">pull_request</span><span>]
+</span><span>
+</span><span style="color:#bf616a;">name</span><span>: </span><span style="color:#a3be8c;">Continuous integration
+</span><span>
+</span><span style="color:#bf616a;">jobs</span><span>:
+</span><span>  </span><span style="color:#bf616a;">test</span><span>:
+</span><span>    </span><span style="color:#bf616a;">name</span><span>: </span><span style="color:#a3be8c;">Test Suite
+</span><span>    </span><span style="color:#bf616a;">strategy</span><span>:
+</span><span>      </span><span style="color:#bf616a;">matrix</span><span>:
+</span><span>        </span><span style="color:#bf616a;">rust</span><span>:
+</span><span>          - </span><span style="color:#a3be8c;">stable
+</span><span>          - </span><span style="color:#d08770;">1.63.0
+</span><span>          - </span><span style="color:#a3be8c;">nightly
+</span><span>        </span><span style="color:#bf616a;">platform</span><span>: [</span><span style="color:#a3be8c;">ubuntu-latest</span><span>, </span><span style="color:#a3be8c;">windows-latest</span><span>, </span><span style="color:#a3be8c;">macos-latest</span><span>]
+</span><span>    </span><span style="color:#bf616a;">runs-on</span><span>: </span><span style="color:#a3be8c;">${{ matrix.platform }}
+</span><span>    </span><span style="color:#bf616a;">steps</span><span>:
+</span><span>      - </span><span style="color:#bf616a;">uses</span><span>: </span><span style="color:#a3be8c;">actions/checkout@v4
+</span><span>      - </span><span style="color:#bf616a;">uses</span><span>: </span><span style="color:#a3be8c;">dtolnay/rust-toolchain@master
+</span><span>        </span><span style="color:#bf616a;">with</span><span>:
+</span><span>          </span><span style="color:#bf616a;">toolchain</span><span>: </span><span style="color:#a3be8c;">${{ matrix.rust }}
+</span><span>      - </span><span style="color:#bf616a;">run</span><span>: </span><span style="color:#a3be8c;">cargo test
+</span></code></pre>
+<p>This CI action would build your project against three Rust versions (<code>stable</code>, <code>1.63.0</code>, and <code>nightly</code>)  and three platforms (<code>Windows</code>, <code>Ubuntu</code>, <code>macOS</code>).</p>
+
+</div>
+
+        </div>
+
+    </body>
+
+</html>
