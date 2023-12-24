@@ -2,6 +2,8 @@
 title = "Setting up Github Actions for repositories targeting various version of Rust"
 date = 2023-12-22
 description = "Setup GitHub Actions CI targeting various versions of Rust compiler"
+[extra]
+keywords = "msrv, rust, cargo, github actions, ci"
 +++
 
 It is crucial to check if your project is building and executing tests with every commit, which can be easily achievable by using the Github Actions CI (Continuous integration) service that is freely available with every Github repository.

@@ -25,6 +25,9 @@
         <meta name="twitter:description" content="{{ page.description | safe }}">
         <meta property="og:description" content="{{ page.description | safe }}" />
         {% endif %}
+        {% if page.extra.keywords %}
+        <meta name="keywords" content="{{ page.extra.keywords | safe }}" />
+        {% endif %}
       {% endblock meta_content %}
 
       <!-- CSS -->
